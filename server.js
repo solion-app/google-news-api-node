@@ -1,23 +1,26 @@
 const express = require("express");
-const fs = require("fs");
-const Axios = require("axios");
 let googleNewsAPI = require("google-news-json");
 
 const app = express();
 
 app.get("/", async (req, res) => {
   // Get params from post body
+  let mode = req.query.mode;
   let topic = req.query.topic;
   let lang = req.query.lang;
 
+  // Set default values
+  mode = mode == "topic" ? googleNewsAPI.TOPIC : googleNewsAPI.TOP_NEWS;
   if (!topic) topic = "world";
   if (!lang) lang = "pt-BR";
 
-  let news = await googleNewsAPI.getNews(googleNewsAPI.TOPIC, topic, lang);
+  // Get news
+  let news = await googleNewsAPI.getNews(mode, topic, lang);
 
+  // Send news
   res.send(news);
 });
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log(`Example app listening on port ${process.env.PORT || 3000}`);
+  console.log(`App is listening on port ${process.env.PORT || 3000}`);
 });
